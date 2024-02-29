@@ -3,8 +3,6 @@ import threading
 
 class ThreadedServer():
     def __init__(self, host, port):
-        self._sockets = []
-        self._addresses = []
         self._host = host
         self._port = port
         self._clients = {}
@@ -19,16 +17,15 @@ class ThreadedServer():
             conn, address = self._sock.accept()
             threading.Thread(target=self.listenToClient,
                              args=(conn, address)).start()
-            self._sockets.append(conn)
-            self._addresses.append(address)
+            
             print(f"connected by {address[0]}:{address[1]}")
+            # listenToClient(conn, address)
 
     def listenToClient(self, conn, address):
         # threading.current_thread().ident - ko có xóaaaaaa
         while True:
             conn.send(str.encode('Welcome to the Server!'))
             data = conn.recv(1024)
-            
             if not data or data.decode('utf-8')=='bye':
                 if address not in self._clients:
                     print(f"byeeeeee port {address[1]}")
@@ -36,25 +33,16 @@ class ThreadedServer():
                 print(f"byeeeeee {self._clients[address]}")
                 del self._clients[address]
                 break
-
+                # Set the response to echo back the recieved data
             if data.decode('utf-8').lower().split()[0] == 'name':
                 name = ' '.join(data.decode('utf-8').split()[1:])
                 self._clients[address] = name
             
-            for x in self._sockets:
-                if (x != conn):
-                    try:
-                        if address not in self._clients:
-                            message = f"port {address[1]}, {threading.current_thread().ident}: {data.decode('utf-8')}"
-                        else:
-                            message = f"name {self._clients[address]}: {data.decode('utf-8')}"
-                        x.send(message[7:])
-                    except:
-                        print('disconnected')
-                        continue
-
+            if address not in self._clients:
+                message = f"port {address[1]}, {threading.current_thread().ident}: {data.decode('utf-8')}"
+            else:
+                message = f"name {self._clients[address]}: {data.decode('utf-8')}"
             print(message )
-
         conn.close()
         
 def main():
