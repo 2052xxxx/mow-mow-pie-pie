@@ -1,8 +1,12 @@
 import socket
 import threading
 
+clients = set()
+clients_lock = threading.Lock()
 class ThreadedServer():
     def __init__(self, host, port):
+        # global clients
+        # global clients_lock
         self._host = host
         self._port = port
         self._clients = {}
@@ -17,21 +21,24 @@ class ThreadedServer():
             conn, address = self._sock.accept()
             threading.Thread(target=self.listenToClient,
                              args=(conn, address)).start()
-            
+            with clients_lock:
+                clients.add(conn)
             print(f"connected by {address[0]}:{address[1]}")
             # listenToClient(conn, address)
 
     def listenToClient(self, conn, address):
         # threading.current_thread().ident - ko có xóaaaaaa
+        conn.send(str.encode('Welcome to the Server!'))
         while True:
-            conn.send(str.encode('Welcome to the Server!'))
             data = conn.recv(1024)
             if not data or data.decode('utf-8')=='bye':
                 if address not in self._clients:
-                    print(f"byeeeeee port {address[1]}")
+                    adios = f"byeeeeee port {address[1]}"
+                    print(adios)
                     break
-                print(f"byeeeeee {self._clients[address]}")
-                del self._clients[address]
+                else:
+                    print(f"byeeeeee {self._clients[address]}")
+                    del self._clients[address]
                 break
                 # Set the response to echo back the recieved data
             if data.decode('utf-8').lower().split()[0] == 'name':
@@ -43,6 +50,12 @@ class ThreadedServer():
             else:
                 message = f"name {self._clients[address]}: {data.decode('utf-8')}"
             print(message )
+            with clients_lock:
+                for c in clients:
+                    if c != conn:
+                    # print(c)
+                    # print(repr(data))
+                        c.sendall(message.encode('utf-8'))
         conn.close()
         
 def main():
