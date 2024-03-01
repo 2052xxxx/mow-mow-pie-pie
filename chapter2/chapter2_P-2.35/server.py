@@ -24,7 +24,6 @@ class ThreadedServer():
             with clients_lock:
                 clients.add(conn)
             print(f"connected by {address[0]}:{address[1]}")
-            # listenToClient(conn, address)
 
     def listenToClient(self, conn, address):
         # threading.current_thread().ident - ko có xóaaaaaa
@@ -33,31 +32,37 @@ class ThreadedServer():
             data = conn.recv(1024)
             if not data or data.decode('utf-8')=='bye':
                 if address not in self._clients:
-                    adios = f"byeeeeee port {address[1]}"
-                    print(adios)
-                    break
+                    message = f"port {address[1]} leaves the chat"
+                    print(message)
                 else:
-                    print(f"byeeeeee {self._clients[address]}")
+                    message = f"{self._clients[address]} leaves the chat"
+                    print(message)
                     del self._clients[address]
+                with clients_lock:
+                    for c in clients:
+                        if c != conn:
+                            c.sendall(message.encode('utf-8'))
+                with clients_lock:
+                    clients.remove(conn)
                 break
-                # Set the response to echo back the recieved data
+
             if data.decode('utf-8').lower().split()[0] == 'name':
                 name = ' '.join(data.decode('utf-8').split()[1:])
                 self._clients[address] = name
             
             if address not in self._clients:
-                message = f"port {address[1]}, {threading.current_thread().ident}: {data.decode('utf-8')}"
+                message = f"Port {address[1]}: {data.decode('utf-8')}"
             else:
-                message = f"name {self._clients[address]}: {data.decode('utf-8')}"
+                message = f"'{self._clients[address]}': {data.decode('utf-8')}"
             print(message )
+
             with clients_lock:
                 for c in clients:
                     if c != conn:
-                    # print(c)
-                    # print(repr(data))
                         c.sendall(message.encode('utf-8'))
         conn.close()
         
+        # def privateChat(self, conn)
 def main():
     ThreadedServer('127.0.0.1', 9999).listen()
 
