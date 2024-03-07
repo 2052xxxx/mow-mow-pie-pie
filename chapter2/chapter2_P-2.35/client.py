@@ -1,4 +1,5 @@
 import threading
+import sys
 import socket
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
@@ -16,8 +17,20 @@ def client_program():
                 message = input()
                 while message.lower().strip() != 'bye':
                     client_socket.send(message.encode('utf-8'))
-                    message = input()
-                client_socket.send(message.encode('utf-8'))
+                    if message.lower().strip() != 'mode':
+                        message = input()
+                    elif message.lower().strip() == 'mode':
+                        key = input("Input port: ")
+                        client_socket.send(key.encode('utf-8'))
+                        message = input("[PPPPPP]: ")
+                        # client_socket.send(pr_mess.encode('utf-8'))
+
+                        # yield
+
+                    #     response = client_socket.recv(1024).decode('utf-8')
+                    #     if response == f"Successfully connect to port {message}":
+                    #         privateChat(client_socket)
+                # client_socket.send(message.encode('utf-8'))
                 break
             except:
                 print("Closed the connection.")
@@ -25,7 +38,7 @@ def client_program():
         client_socket.close()
         receive_thread.join()
     except ConnectionRefusedError:
-        print("Server didn't even exist")
+        print("server didn't even exist :v")
         client_socket.close()
 
 def receive_messages(client_socket):
@@ -33,10 +46,26 @@ def receive_messages(client_socket):
         try:
             response = client_socket.recv(1024).decode('utf-8')
             print(response)
+        except:
+            print("Connection to the server closed.")
+            break
 
-        except ConnectionResetError:
-            print("Server is somewhat unexpectedly closed.")
-            return 0
+# def privateChat(client_socket):
+#     receive_thread = threading.Thread()
+#     receive_thread.start()
+#     while True:
+#         try:
+#             message = input()
+#             while message.lower().strip() != 'out':
+#                 client_socket.send(message.encode('utf-8'))
+#                 message = input()
+#             client_socket.send(message.encode('utf-8'))
+#             break
+#         except:
+#             print("Closed private chat.")
+#             break
+#     client_socket.close()
+#     receive_thread.join()
         
 if __name__ == '__main__':
     client_program()
