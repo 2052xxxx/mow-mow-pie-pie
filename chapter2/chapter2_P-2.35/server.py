@@ -72,7 +72,7 @@ class ThreadedServer():
                             if c.getpeername()[1] == key:
                                 conn.send(f"Successfully connect to port {c.getpeername()[1]}".encode('utf-8'))
                                 pr_mess = conn.recv(1024).decode("utf-8")
-                                c.send(f"Port {conn.getpeername()[1]} have a message: {pr_mess}".encode('utf-8'))
+                                c.send(f"[Port {conn.getpeername()[1]}] have a message: {pr_mess}".encode('utf-8'))
                                 # self.privateChat(conn, c, message)
                                 break
 
