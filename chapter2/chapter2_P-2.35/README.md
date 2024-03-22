@@ -13,11 +13,21 @@ As the name describes itself, this is a server-multiclient TCP network program
 
 ### Overview
 
+server is activated
+
 ![server is activated](image.png)
+
+when client is in action, server will send a message to inform that client has successfully connect to server
 ![when client is in action, server will send a message to inform that client has successfully connect to server](image-1.png)
+
+server print out addresses from all the clients that successfully connect to server
 ![server print out addresses from all the clients that successfully connect to server](image-2.png)
-![all1](image-3.png) overview on all worksadsjfja sdf
-![client2](image-4.png) when client type "mode", server will interpret that client wants to connect to another client privately, then client will input the port client wat to connect????
+
+overview on how programs execute simultaneously
+![all1](image-3.png)
+
+when client type "mode", server will interpret that client wants to connect to another client privately, then client will input the port client want to connect
+![client2](image-4.png)
 
 ![all2](image-5.png) yeah it successed
 
@@ -28,4 +38,4 @@ others including server will receive a nofification
 ![all3](image-7.png)
 
 ![all4](image-8.png)
-yeah that's it
+yeah that's it.
