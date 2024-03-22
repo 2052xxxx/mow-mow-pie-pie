@@ -27,6 +27,7 @@ overview on how programs execute simultaneously
 ![all1](image-3.png)
 
 when client type "mode", server will interpret that client wants to connect to another client privately, then client will input the port client want to connect
+
 ![client2](image-4.png)
 
 ![all2](image-5.png) yeah it successed
